@@ -171,27 +171,32 @@ static const char *HH_CASE_LABELS[]={
         "sensitive"
 };
 
-static const char *INSTALL_BASH_STRING=
-        "\n# add this configuration to ~/.bashrc"
-        "\nexport HH_CONFIG=hicolor         # get more colors"
-        "\nshopt -s histappend              # append new history items to .bash_history"
-        "\nexport HISTCONTROL=ignorespace   # leading space hides commands from history"
-        "\nexport HISTFILESIZE=10000        # increase history file size (default is 500)"
-        "\nexport HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)"
-        "\nexport PROMPT_COMMAND=\"history -a; history -n; ${PROMPT_COMMAND}\"   # mem/file sync"
-        "\n# if this is interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)"
-        "\nif [[ $- =~ .*i.* ]]; then bind '\"\\C-r\": \"\\C-a hh \\C-j\"'; fi"
-        "\n\n";
-
-static const char *INSTALL_ZSH_STRING=
-        "\n# add this configuration to ~/.zshrc"
-        "\nexport HISTFILE=~/.zsh_history  # ensure history file visibility"
-        "\nexport HH_CONFIG=hicolor        # get more colors"
-        "\nbindkey -s \"\\C-r\" \"\\eqhh\\n\"     # bind hh to Ctrl-r (for Vi mode check doc)"
-        // alternate binding options in zsh:
-        //   bindkey -s '^R' '^Ahh ^M'
-        //   bindkey -s "\C-r" "\C-ahh \C-j"
-        "\n\n";
+static const char *INSTALL_STRING=
+	"complete_shortcut=\"${hstr_complete_SHORTCUT:-\\C-r}\""
+	"\n"
+	"\nif [[ -n \"$BASH\" ]]; then"
+	"\n"
+	"\n    function hstr_complete {"
+	"\n        offset=${READLINE_POINT}"
+	"\n        READLINE_POINT=0"
+	"\n"
+	"\n        tmp_file=$(mktemp -t hstr.XXXXXXX)"
+	"\n        </dev/tty hstr ${READLINE_LINE:0:offset} 2>$tmp_file"
+	"\n        READLINE_LINE=$(<$tmp_file)"
+	"\n        rm -f $tmp_file"
+	"\n"
+	"\n        READLINE_POINT=${#READLINE}"
+	"\n     }"
+	"\n"
+	"\n     export HH_CONFIG=hicolor         # get more colors"
+	"\n     shopt -s histappend              # append new history items to .bash_history"
+	"\n     export HISTCONTROL=ignorespace   # leading space hides commands from history"
+	"\n     export HISTFILESIZE=10000        # increase history file size (default is 500)"
+	"\n     export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)"
+	"\n     export PROMPT_COMMAND=\"history -a; history -n; ${PROMPT_COMMAND}\"   # mem/file sync"
+	"\n"
+	"\n     bind -x '\"'\"$complete_shortcut\"'\":\"hstr_complete\"';"
+	"\nfi\n";
 
 static const char *HELP_STRING=
         "Usage: hh [option] [arg1] [arg2]..."
@@ -1221,15 +1226,10 @@ void hstr_getopt(int argc, char **argv, Hstr *hstr)
             printf("%s", HELP_STRING);
             exit(EXIT_SUCCESS);
         case 'z':
-            printf("%s", INSTALL_ZSH_STRING);
-            exit(EXIT_SUCCESS);
+	    printf("%s", "TBD");
+            exit(EXIT_FAILURE);
         case 's':
-            // ZSH_VERSION is not exported by Zsh > detected by parent process name
-            if(isZshParentShell()) {
-                printf("%s", INSTALL_ZSH_STRING);
-            } else {
-                printf("%s", INSTALL_BASH_STRING);
-            }
+	    printf("%s", INSTALL_STRING);
             exit(EXIT_SUCCESS);
 
         case '?':
