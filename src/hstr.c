@@ -36,6 +36,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <wchar.h>
+#include <limits.h>
 
 #include "include/hashset.h"
 #include "include/hstr_curses.h"
@@ -181,7 +182,7 @@ static const char *INSTALL_STRING=
 	"\n        READLINE_POINT=0"
 	"\n"
 	"\n        tmp_file=$(mktemp -t hstr.XXXXXXX)"
-	"\n        </dev/tty hstr ${READLINE_LINE:0:offset} 2>$tmp_file"
+	"\n        </dev/tty %s ${READLINE_LINE:0:offset} 2>$tmp_file"
 	"\n        READLINE_LINE=$(<$tmp_file)"
 	"\n        rm -f $tmp_file"
 	"\n"
@@ -1229,8 +1230,12 @@ void hstr_getopt(int argc, char **argv, Hstr *hstr)
 	    printf("%s", "TBD");
             exit(EXIT_FAILURE);
         case 's':
-	    printf("%s", INSTALL_STRING);
+	{
+	    char self[PATH_MAX]={0};
+	    ssize_t size=readlink("/proc/self/exe",self,PATH_MAX-1);
+	    printf(INSTALL_STRING,size>0?self:"hstr");
             exit(EXIT_SUCCESS);
+	}
 
         case '?':
         default:
