@@ -34,6 +34,6 @@ hh_SOURCES = 						\
 
 # create hh > hstr hard link on installation
 install-exec-hook:
-	ln $(DESTDIR)$(bindir)/hh$(EXEEXT) $(DESTDIR)$(bindir)/hstr$(EXEEXT)
+	ln -f $(DESTDIR)$(bindir)/hh$(EXEEXT) $(DESTDIR)$(bindir)/hstr$(EXEEXT)
 
 hh_LDADD = $(NCURSES_LIBS)
