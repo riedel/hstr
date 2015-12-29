@@ -186,7 +186,7 @@ static const char *INSTALL_STRING=
 	"\n        READLINE_LINE=$(<$tmp_file)"
 	"\n        rm -f $tmp_file"
 	"\n"
-	"\n        READLINE_POINT=${#READLINE}"
+	"\n        READLINE_POINT=${#READLINE_LINE}"
 	"\n     }"
 	"\n"
 	"\n     export HH_CONFIG=hicolor         # get more colors"
