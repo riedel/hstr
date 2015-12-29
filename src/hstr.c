@@ -216,7 +216,7 @@ static const char *HELP_STRING=
         "\n";
 
 static const char *VERSION_STRING=
-        "hh version \"1.19\""
+        "hh version \"1.20\""
         "\n   build   \""__DATE__" " __TIME__"\""
         "\n";
 
@@ -1093,7 +1093,7 @@ void loop_to_select(Hstr *hstr)
                     favorites_choose(hstr->favorites,result);
                 }
             } else {
-                result=(pattern==NULL?"":pattern);
+                result=pattern;
             }
             done=TRUE;
             break;
@@ -1106,7 +1106,7 @@ void loop_to_select(Hstr *hstr)
                     favorites_choose(hstr->favorites,result);
                 }
             } else {
-                result=(pattern==NULL?"":pattern);
+                result=pattern;
             }
             done=TRUE;
             break;
